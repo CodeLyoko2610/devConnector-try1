@@ -1,8 +1,15 @@
 const express = require('express');
 const connectDB = require('./config/db');
 
-//Initialize express
+
+
+
+//Initialize (Init) express
 const app = express();
+
+//Init middlewares
+app.use(express.json({ extended: false }));
+
 //Connect database
 connectDB();
 //Connect app
