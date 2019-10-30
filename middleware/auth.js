@@ -7,7 +7,9 @@ module.exports = function (req, res, next) {
 
     //Check if not token
     if (!token) {
-        res.status(401).json({ msg: 'No token. Authorization is denied.' });
+        res.status(401).json({
+            msg: 'No token. Authorization is denied.'
+        });
     };
 
     //Verify token
@@ -17,6 +19,9 @@ module.exports = function (req, res, next) {
 
         next();
     } catch (error) {
-        res.status(401).json({ msg: 'Token is not valid' });
+        console.error(error.message);
+        res.status(401).json({
+            msg: 'Token is not valid'
+        });
     }
 }

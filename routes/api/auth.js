@@ -7,10 +7,11 @@ const auth = require('../../middleware/auth');
 const User = require('../../models/User');
 
 //@route GET api/auth
-//@desc Test route
+//@desc Get authorized user's info
 //@access Public
 router.get('/', auth, async (req, res) => {
     try {
+        //Search in the db for the user with same id, output the user from db, leaving out the password
         const user = await User.findById(req.user.id).select('-password');
         res.json(user);
     } catch (error) {
