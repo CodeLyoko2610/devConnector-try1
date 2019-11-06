@@ -48,6 +48,70 @@ router.post('/', [
         });
     }
 
+    //Collect information from request's body
+    const {
+        company,
+        website,
+        location,
+        status,
+        skills,
+        bio,
+        githubusername,
+        youtube,
+        twitter,
+        facebook,
+        linkedin,
+        instagram
+    } = req.body;
+
+    let profileFields = {};
+    profileFields.user = req.user.id;
+    if (company) profileFields.company = company;
+    if (website) profileFields.website = website;
+    if (location) profileFields.location = location;
+    if (status) profileFields.status = status;
+    if (bio) profileFields.bio = bio;
+    if (githubusername) profileFields.githubusername = githubusername;
+
+    //Skill field
+    if (skills) {
+        profileFields.skills = skills.split(",").map(skill => skill.trim());
+    }
+
+    //Social object
+    profileFields.social = {};
+    if (youtube) profileFields.social.youtube = youtube;
+    if (twitter) profileFields.social.twitter = twitter;
+    if (facebook) profileFields.social.facebook = facebook;
+    if (linkedin) profileFields.social.linkedin = linkedin;
+    if (instagram) profileFields.social.instagram = instagram;
+
+    //Building / Updating user profile from collected info
+    try {
+        let profile = await Profile.findOne({ user: req.user.id });
+
+        //If profile exists, update
+        if (profile) {
+            profile = await Profile.findOneAndUpdate(
+                { user: req.user.id },
+                //profileFields
+                { $set: profileFields },
+                { new: true }
+            );
+
+            return res.json(profile);
+        }
+
+        //If not, create new one
+        profile = new Profile(profileFields);
+        await profile.save();
+
+        res.json(profile);
+
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).send('Server error.');
+    }
 });
 
 
