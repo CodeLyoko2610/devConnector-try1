@@ -1,6 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const { check, validationResult } = require('express-validator');
+const {
+  check,
+  validationResult
+} = require('express-validator');
 //models
 const User = require('../../models/User');
 const Profile = require('../../models/Profile');
@@ -38,11 +41,11 @@ router.post(
   [
     auth,
     check('status', 'Status must be provided.')
-      .not()
-      .isEmpty(),
+    .not()
+    .isEmpty(),
     check('skills', 'Skills is required')
-      .not()
-      .isEmpty()
+    .not()
+    .isEmpty()
   ],
   async (req, res) => {
     const errors = validationResult(req);
@@ -92,15 +95,21 @@ router.post(
 
     //Building / Updating user profile from collected info
     try {
-      let profile = await Profile.findOne({ user: req.user.id });
+      let profile = await Profile.findOne({
+        user: req.user.id
+      });
 
       //If profile exists, update
       if (profile) {
-        profile = await Profile.findOneAndUpdate(
-          { user: req.user.id },
+        profile = await Profile.findOneAndUpdate({
+            user: req.user.id
+          },
           //profileFields
-          { $set: profileFields },
-          { new: true }
+          {
+            $set: profileFields
+          }, {
+            new: true
+          }
         );
 
         return res.json(profile);
@@ -136,21 +145,50 @@ router.get('/', async (req, res) => {
 //@access Public
 router.get('/user/:user_id', async (req, res) => {
   try {
-    let profile = await Profile.findOne({ user: req.params.user_id }).populate(
+    let profile = await Profile.findOne({
+      user: req.params.user_id
+    }).populate(
       'user',
       ['name', 'avatar']
     );
 
-    if (!profile) return res.status(400).json({ msg: 'Profile not found.' });
+    if (!profile) return res.status(400).json({
+      msg: 'Profile not found.'
+    });
 
     res.json(profile);
   } catch (error) {
     console.error(error.message);
     if (error.kind == 'ObjectId') {
-      return res.status(400).json({ msg: 'Profile not found.' }); //so in case of invalid user_id, the response is also the same
+      return res.status(400).json({
+        msg: 'Profile not found.'
+      }); //so in case of invalid user_id, the response is also the same
     }
     res.status(500).send('Server error.');
   }
 });
 
+//@route DELETE api/profiles/
+//@desc Delete a user, his profile, and his posts
+//@access Private
+router.delete('/', auth, async (req, res) => {
+  try {
+    //@---Todo: Remove user's post
+    //Remove user
+    await User.findOneAndDelete({
+      _id: req.user.id
+    });
+    //Remove profile
+    await Profile.findOneAndDelete({
+      user: req.user.id
+    });
+
+    res.json({
+      msg: 'User deleted.'
+    });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send('Server error.');
+  }
+});
 module.exports = router;
