@@ -41,11 +41,11 @@ router.post(
   [
     auth,
     check('status', 'Status must be provided.')
-    .not()
-    .isEmpty(),
+      .not()
+      .isEmpty(),
     check('skills', 'Skills is required')
-    .not()
-    .isEmpty()
+      .not()
+      .isEmpty()
   ],
   async (req, res) => {
     const errors = validationResult(req);
@@ -102,14 +102,14 @@ router.post(
       //If profile exists, update
       if (profile) {
         profile = await Profile.findOneAndUpdate({
-            user: req.user.id
-          },
+          user: req.user.id
+        },
           //profileFields
           {
             $set: profileFields
           }, {
-            new: true
-          }
+          new: true
+        }
         );
 
         return res.json(profile);
@@ -191,4 +191,52 @@ router.delete('/', auth, async (req, res) => {
     res.status(500).send('Server error.');
   }
 });
+
+//@route PUT api/profiles/experience
+//@desc Add experience to an authorized user's profile
+//@access Private
+router.put('/experience', [auth, [
+  check('title', 'Please enter a title.').not().isEmpty(),
+  check('company', 'Please enter a company.').not().isEmpty(),
+  check('from', 'Please enter the date you start working at the company.').not().isEmpty(),
+]], async (req, res) => {
+  let errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
+  let {
+    title,
+    company,
+    location,
+    from,
+    to,
+    description,
+    current
+  } = req.body;
+
+  const newExp = {
+    title,
+    company,
+    location,
+    from,
+    to,
+    description,
+    current
+  }
+
+  try {
+    let profile = await Profile.findOne({ user: req.user.id });
+
+    profile.experience.unshift(newExp); //Put the new experience on top of the others
+
+    profile.save();
+
+    res.json(profile);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send('Server error.');
+  }
+})
+
 module.exports = router;
