@@ -261,4 +261,52 @@ router.delete('/experience/:exp_id', auth, async (req, res) => {
   }
 });
 
+//@route PUT api/profiles/education/:edu_id
+//@desc Add education to user's profile
+//@access Private
+router.put('/education', [auth, [
+  check('school', 'Name of school is required.').not().isEmpty(),
+  check('degree', 'Name of degree is required.').not().isEmpty(),
+  check('fieldofstudy', 'Field of study is required.').not().isEmpty(),
+  check('from', 'Please enter a start date.').not().isEmpty(),
+]], async (req, res) => {
+  let errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return res.status(400).json(errors.array());
+  }
+
+  try {
+    let profile = await Profile.findOne({ user: req.user.id });
+
+    let {
+      school,
+      degree,
+      fieldofstudy,
+      from,
+      to,
+      current,
+      description
+    } = req.body;
+
+    let newEdu = {
+      school,
+      degree,
+      fieldofstudy,
+      from,
+      to,
+      current,
+      description
+    };
+
+    await profile.education.unshift(newEdu);
+
+    await profile.save();
+    res.json(profile);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send('Server error.');
+  }
+})
+
 module.exports = router;
