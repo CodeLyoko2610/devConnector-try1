@@ -1,4 +1,6 @@
 {
     "mongoURI": "mongodb+srv://chuong1:chuong1@cluster0-pcs1c.mongodb.net/test?retryWrites=true&w=majority",
-    "jwtKey": "mySecretKey"
+    "jwtKey": "mySecretKey",
+    "githubClientId": "1438ab73365722342ba7",
+    "githubKey": "ac00dc8f28e16e74c36b81ff8abddf564c741b8c"
 }

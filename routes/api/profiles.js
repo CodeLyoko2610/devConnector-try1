@@ -4,6 +4,8 @@ const {
   check,
   validationResult
 } = require('express-validator');
+const config = require('config');
+const request = require('request');
 //models
 const User = require('../../models/User');
 const Profile = require('../../models/Profile');
@@ -330,5 +332,38 @@ router.delete('/education/:edu_id', auth, async (req, res) => {
     res.status(500).send('Server error.');
   }
 });
+
+//@route  api/profiles/github/:username
+//@desc Get user repos from Github
+//@access Public
+router.get('/github/:username', (req, res) => {
+  try {
+    const options = {
+      uri: `https://api.github.com/users/${req.params.username}/repos?per_page=5&sort=created:asc&client_id=${config.get('githubClientId')}&client_secret=${'githubKey'}`,
+      method: 'GET',
+      headers: { 'user-agent': 'node.js' }
+    };
+
+    //Using Request package to make https call directly from the app (not via Browser or Postman...) 
+    request(options, (error, response, body) => {
+      if (error) {
+        console.error(error.message);
+      }
+
+      if (response.statusCode !== 200) {
+        return res.status(404).json({ msg: 'No Github profile found.' });
+      }
+
+      res.json(JSON.parse(body));
+    });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send('Server error.');
+  }
+})
+
+//Start making notes here
+//https://onedrive.live.com/edit.aspx/Documents/Code^4s%20Notebook?cid=fd40b2e523eeb222&id=documents&wd=target%28JavaScript%20Front%20To%20Back.one%7C4857882B-FFE2-416F-AB90-F88760D682CE%2F%29
+onenote: https://d.docs.live.net/fd40b2e523eeb222/Documents/Code's%20Notebook/JavaScript%20Front%20To%20Back.one#section-id={4857882B-FFE2-416F-AB90-F88760D682CE}&end
 
 module.exports = router;
