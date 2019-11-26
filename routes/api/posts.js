@@ -49,7 +49,7 @@ router.post('/', [
 //@access Private
 router.get('/', auth, async (req, res) => {
     try {
-        posts = await Post.find().sort({ date: -1 });
+        let posts = await Post.find().sort({ date: -1 });
 
         res.json(posts);
     } catch (error) {
@@ -63,7 +63,7 @@ router.get('/', auth, async (req, res) => {
 //@access Private
 router.get('/:post_id', auth, async (req, res) => {
     try {
-        post = await Post.findById(req.params.post_id);
+        let post = await Post.findById(req.params.post_id);
 
         if (!post) {
             return res.status(404).json({ msg: 'Post is not found.' });
