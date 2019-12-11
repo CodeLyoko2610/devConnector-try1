@@ -18,7 +18,7 @@ const auth = require('../../middleware/auth');
 //@access Private
 router.get('/me', auth, async (req, res) => {
   try {
-    const profile = await Profile.findOne({
+    let profile = await Profile.findOne({
       user: req.user.id
     }).populate('user', ['name', 'avatar']);
 
@@ -50,7 +50,7 @@ router.post(
       .isEmpty()
   ],
   async (req, res) => {
-    const errors = validationResult(req);
+    let errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({
         errors: errors.array()
@@ -58,7 +58,7 @@ router.post(
     }
 
     //Collect information from request's body
-    const {
+    let {
       company,
       website,
       location,
@@ -217,7 +217,7 @@ router.put('/experience', [auth, [
     current
   } = req.body;
 
-  const newExp = {
+  let newExp = {
     title,
     company,
     location,
@@ -246,10 +246,10 @@ router.put('/experience', [auth, [
 //@access Private
 router.delete('/experience/:exp_id', auth, async (req, res) => {
   try {
-    const profile = await Profile.findOne({ user: req.user.id });
+    let profile = await Profile.findOne({ user: req.user.id });
 
     //Get remove index
-    const removeIndex = profile.experience
+    let removeIndex = profile.experience
       .map(item => item.id)
       .indexOf(req.params.exp_id);
 
@@ -316,10 +316,10 @@ router.put('/education', [auth, [
 //@access Private
 router.delete('/education/:edu_id', auth, async (req, res) => {
   try {
-    const profile = await Profile.findOne({ user: req.user.id });
+    let profile = await Profile.findOne({ user: req.user.id });
 
     //Get remove index
-    const removeIndex = profile.education
+    let removeIndex = profile.education
       .map(item => item.id)
       .indexOf(req.params.edu_id);
 
@@ -338,7 +338,7 @@ router.delete('/education/:edu_id', auth, async (req, res) => {
 //@access Public
 router.get('/github/:username', (req, res) => {
   try {
-    const options = {
+    let options = {
       uri: `https://api.github.com/users/${req.params.username}/repos?per_page=5&sort=created:asc&client_id=${config.get('githubClientId')}&client_secret=${'githubKey'}`,
       method: 'GET',
       headers: { 'user-agent': 'node.js' }
