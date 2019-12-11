@@ -179,4 +179,36 @@ router.put('/unlike/:post_id', auth, async (req, res) => {
         res.status(500).send('Server error.');
     }
 })
+
+//@route POST api/posts/comment/:post_id
+//@desc Comment on a post
+//@access Private
+router.post('/comment/:post_id', [auth,
+    [
+        check('text', 'Please input something.').not().isEmpty(),
+    ]
+],
+    async (req, res) => {
+        try {
+            let user = await User.findById(req.user.id).select('-password');
+            let post = await Post.findById(req.params.post_id);
+
+            //New comment object
+            let newComment = {
+                user: user.id,
+                name: user.name,
+                avatar: user.avatar,
+                text: req.body.text
+            }
+
+            await post.comments.unshift(newComment);
+            await post.save();
+
+            res.json(post.comments);
+        } catch (error) {
+            console.error(error.message);
+            res.status(500).send('Server error.');
+        }
+    }
+)
 module.exports = router;
