@@ -246,4 +246,4 @@ router.delete('/comment/:post_id/:comment_id', auth, async (req, res) => {
     }
 });
 
-module.exports = router;
+module.exports = router;    
