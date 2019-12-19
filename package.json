@@ -4,6 +4,8 @@
   "description": "Social media for developers - try1",
   "main": "server.js",
   "scripts": {
+    "setup1": "npm install concurrently",
+    "setup2": "concurrently \"npm install\" \" npm install --prefix client\"",
     "start": "node server",
     "server": "nodemon server",
     "client": "npm start --prefix client",
