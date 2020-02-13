@@ -16,8 +16,10 @@ const App = () => (
 
       {/* Div with a class of container to push pages in the center, instead of displaying from top of the screen like landing page.  */}
       <section className='container'>
-        <Route path='/register' component={Register} />
-        <Route path='/login' component={Login} />
+        <Switch>
+          <Route path='/register' component={Register} />
+          <Route path='/login' component={Login} />
+        </Switch>
       </section>
     </Fragment>
   </Router>
