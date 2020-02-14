@@ -1,5 +1,6 @@
 import React, { Fragment, useState } from 'react';
 import { Link } from 'react-router-dom';
+const axios = require('axios');
 
 const Register = () => {
   //Create state variable using useState Hook
@@ -19,13 +20,37 @@ const Register = () => {
   };
 
   //Submit form data
-  const onSubmit = e => {
+  const onSubmit = async e => {
     e.preventDefault(); //prevent from default submitting
 
     if (password !== password2) {
       console.log('Passwords do not match. Please fix your password.');
     } else {
-      console.log(formData);
+      //Create a new user
+      let newUser = {
+        name,
+        email,
+        password,
+        password2
+      };
+
+      try {
+        //Config and body for axios
+        const config = {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        };
+
+        const body = JSON.stringify(newUser);
+
+        const res = await axios.post('/api/users', body, config);
+
+        console.log(res.data);
+      } catch (error) {
+        console.log(error);
+        console.log(error.response.data);
+      }
     }
   };
 
